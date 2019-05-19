@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define true 1
 #define ARGC_ERROR 1
 #define TOOMANYFILES_ERROR 2
 #define CONFLICTING_OUTPUT_OPTIONS 3
@@ -103,7 +104,6 @@ void showoptions(const char* file1, const char* file2) {
   print_option("show_unified", showunified);
 
   printf("file1: %s,  file2: %s\n\n\n", file1, file2);
-
   printline();
 }
 
@@ -160,7 +160,23 @@ int main(int argc, const char * argv[]) {
   para* p = para_first(strings1, count1);
   para* q = para_first(strings2, count2);
   int foundmatch = 0;
-
+  if(report_identical || showbrief){
+    para* p2 = para_first(strings1, count1);
+    para* q2 = para_first(strings2, count2);
+    while (p2 != NULL && q2 != NULL && para_equal(p2, q2) != 0) {
+      q2 = para_next(q2);
+      p2 = para_next(p2);
+    }
+    if(p2==NULL && q2==NULL){
+      if(report_identical){
+        printf("Files %s and %s are identical\n",argv[argc-2],argv[argc-1]);
+      }
+      return 0;
+    } else if(showbrief){
+      printf("Files %s and %s are different\n",argv[argc-2],argv[argc-1]);
+      return 0;
+    }
+  }
   para* qlast = q;
   while (p != NULL) {
     qlast = q;
@@ -171,24 +187,32 @@ int main(int argc, const char * argv[]) {
     q = qlast;
 
     if (foundmatch) {
-      if(showbrief) { printf("Files are different\n"); exit(0); }
       while ((foundmatch = para_equal(p, q)) == 0) {
-        para_print(q, printright);
+        if(!suppresscommon||!showleftcolumn){
+        para_print(q, printright,showsidebyside);
+      }
         q = para_next(q);
         qlast = q;
       }
-      para_print(q, printboth);
+      if(!suppresscommon||!showleftcolumn){
+      para_print(q, printboth,showsidebyside);
+    }
       p = para_next(p);
       q = para_next(q);
     } else {
-      para_print(p, printleft);
+      if(!suppresscommon){
+      para_print(p, printleft,showsidebyside);
+    }
       p = para_next(p);
     }
   }
   while (q != NULL) {
-    para_print(q, printright);
+    para_print(q, printright,showsidebyside);
     q = para_next(q);
   }
-
+  while(p!=NULL){
+    para_print(p,printleft,showsidebyside);
+    p=para_next(p);
+  }
   return 0;
 }
