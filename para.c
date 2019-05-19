@@ -65,7 +65,7 @@ int para_equal(para* p, para* q) {
   if (para_size(p) != para_size(q)) { return 0; }
   if (p->start >= p->filesize || q->start >= q->filesize) { return 0; }
   int i=0, equal =0;
-  while (i<=(sizeof p->base)/ (sizeof p->base[0]) &&(equal = strcmp(p->base[i], q->base[i])) == 0) { ++i;}
+  while (i<=(sizeof p->base)/ (sizeof p->base[0]) &&(equal = strcmp(p->base[i], q->base[i])) == 0 ) { ++i;}
   return 1;
 }
 
@@ -73,7 +73,19 @@ void para_print(para* p, void (*fp)(const char*, int), int mode) {
   if (p == NULL) { return; }
   for (int i = p->start; i <= p->stop && i != p->filesize; ++i) { fp(p->base[i],mode); }
 }
-
+void para_leftcolumnprint(para* p, para* q){
+  if (!para_equal(p,q) ) { return; }
+  for (int i = p->start; i <= p->stop && i != p->filesize; ++i) {
+    char ptemp[256];
+    strncpy(ptemp, p->base[i], strlen(p->base[i])-1);
+    if(strcmp(p->base[i],q->base[i])!=0){
+      printf("%s %50s \n",ptemp, "(");
+    }else{
+      printf("%s %50s %s", ptemp, "|",q->base[i]);
+    }
+    memset(ptemp,0,sizeof(ptemp));
+  }
+}
 void para_printfile(char* base[], int count, void (*fp)(const char*, int),int mode) {
   para* p = para_first(base, count);
   while (p != NULL) {

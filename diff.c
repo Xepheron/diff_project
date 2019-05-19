@@ -30,12 +30,11 @@ void version(void) {
   printf("You may redistribute copies of this program\n");
   printf("under the terms of the GNU General Public License.\n");
   printf("For more information about these matters, see the file named COPYING.\n");
-  printf("Written by William McCarthy, Tony Stark, and Dr. Steven Strange\n");
+  printf("Written by William McCarthy & Brandon Tetley\n");
 }
 
 void todo_list(void) {
   printf("\n\n\nTODO: check line by line in a paragraph, using '|' for differences");
-  printf("\nTODO: this starter code does not yet handle printing all of fin1's paragraphs.");
   printf("\nTODO: handle the rest of diff's options\n");
 }
 
@@ -188,21 +187,20 @@ int main(int argc, const char * argv[]) {
 
     if (foundmatch) {
       while ((foundmatch = para_equal(p, q)) == 0) {
-        if(!suppresscommon||!showleftcolumn){
         para_print(q, printright,showsidebyside);
-      }
         q = para_next(q);
         qlast = q;
       }
-      if(!suppresscommon||!showleftcolumn){
-      para_print(q, printboth,showsidebyside);
-    }
+      if(showsidebyside&&!suppresscommon&&!showleftcolumn){
+       para_print(q,printboth,showsidebyside);
+      }
+      else if(showsidebyside && showleftcolumn){
+        para_leftcolumnprint(p,q);
+      }
       p = para_next(p);
       q = para_next(q);
-    } else {
-      if(!suppresscommon){
+    }  else {
       para_print(p, printleft,showsidebyside);
-    }
       p = para_next(p);
     }
   }
@@ -212,7 +210,7 @@ int main(int argc, const char * argv[]) {
   }
   while(p!=NULL){
     para_print(p,printleft,showsidebyside);
-    p=para_next(p);
+    p = para_next(p);
   }
   return 0;
 }
