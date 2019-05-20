@@ -6,21 +6,7 @@
 //  Copyright © 2019 William McCarthy. All rights reserved.
 //
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#define true 1
-#define ARGC_ERROR 1
-#define TOOMANYFILES_ERROR 2
-#define CONFLICTING_OUTPUT_OPTIONS 3
-
-#define MAXSTRINGS 1024
-#define MAXPARAS 4096
-
-#define HASHLEN 200
-
-#include "para.c"
-#include "util.c"
+#include "diff.h"
 
 
 void version(void) {
@@ -38,13 +24,13 @@ void todo_list(void) {
   printf("\nTODO: handle the rest of diff's options\n");
 }
 
-char buf[BUFLEN];
+/*char buf[BUFLEN];
 char *strings1[MAXSTRINGS], *strings2[MAXSTRINGS];
 int showversion = 0, showbrief = 0, ignorecase = 0, report_identical = 0, showsidebyside = 0;
 int showleftcolumn = 0, showunified = 0, showcontext = 0, suppresscommon = 0, diffnormal = 0;
 
 int count1 = 0, count2 = 0;
-
+*/
 
 void loadfiles(const char* filename1, const char* filename2) {
   memset(buf, 0, sizeof(buf));
@@ -191,7 +177,7 @@ int main(int argc, const char * argv[]) {
         q = para_next(q);
         qlast = q;
       }
-      if(showsidebyside&&!suppresscommon&&!showleftcolumn){
+      if(showsidebyside&&suppresscommon&&!showleftcolumn){
        para_print(q,printboth,showsidebyside);
       }
       else if(showsidebyside && showleftcolumn){
